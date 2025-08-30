@@ -1,0 +1,19 @@
+{
+  "nailong_sticker_collection": "Nailong Sticker Collection",
+  "search_placeholder": "Search file name...",
+  "current_page_info": "Page {{page}}/{{totalPages}}, {{totalItems}} items in total",
+  "no_preview": "No Preview",
+  "download": "Download",
+  "open": "Open",
+  "first_page": "First",
+  "previous_page": "Prev",
+  "next_page": "Next",
+  "last_page": "Last",
+  "footer_text_1": "© 2025 Nailong fans - All resources on this site are from the internet and are for learning and communication purposes only. Please delete them within 24 hours after downloading.",
+  "footer_text_2": "This site does not store any actual files. All content is indexed pointers. If there is any infringement, please contact us to delete it.",
+  "loading": "Loading...",
+  "fetch_error": "Failed to fetch stickers: {{message}}",
+  "language": "Language",
+  "switch_to_en": "Switch to English",
+  "switch_to_zh": "切换到中文"
+}
