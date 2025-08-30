@@ -90,3 +90,9 @@ npx prisma init --datasource-provider postgresql
 -   **搜索功能:** 基于表情的 `title` 和 `description` 实现搜索。
 -   **一键复制/下载:** 提升用户体验。
 -   **点赞/收藏:** 增加用户互动功能。
+-   
+
+## 部署资料
+
+数据库
+https://supabase.com/dashboard/project/mhyckmaeivojdgncdsfc
