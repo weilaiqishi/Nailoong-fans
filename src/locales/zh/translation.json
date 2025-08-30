@@ -15,5 +15,7 @@
   "fetch_error": "获取表情包失败: {{message}}",
   "language": "语言",
   "switch_to_en": "Switch to English",
-  "switch_to_zh": "切换到中文"
+  "switch_to_zh": "切换到中文",
+  "total_items": "共 {{count}} 条",
+  "items_per_page": "{{count}}条/页"
 }

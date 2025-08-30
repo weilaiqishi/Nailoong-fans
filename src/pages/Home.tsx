@@ -1,22 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, KeyboardEvent } from 'react';
 import { Search, Download, ExternalLink, Moon, Sun, Languages } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import { supabase } from '@/lib/supabaseClient';
 import { Sticker } from '@/types';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-
-const ITEMS_PER_PAGE = 30;
+import { Pagination, ITEMS_PER_PAGE } from '@/components/Pagination';
 
 // 头部组件
-const Header = ({ page, totalItems }: { page: number; totalItems: number }) => {
+const Header = ({ page, totalItems, onSearch }: { page: number; totalItems: number; onSearch: (term: string) => void; }) => {
   const { t, i18n } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [localSearchTerm, setLocalSearchTerm] = useState('');
   const { theme, toggleTheme } = useTheme();
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
   const handleLangChange = (lang: string) => {
     i18n.changeLanguage(lang);
+  };
+
+  const handleSearchClick = () => {
+    onSearch(localSearchTerm);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleSearchClick();
+    }
   };
 
   return (
@@ -54,10 +63,11 @@ const Header = ({ page, totalItems }: { page: number; totalItems: number }) => {
             type="text" 
             placeholder={t('search_placeholder')}
             className="w-full py-2 px-4 pr-10 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)} 
+            value={localSearchTerm}
+            onChange={(e) => setLocalSearchTerm(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
-          <button className="absolute right-0 top-0 h-full px-4 bg-purple-600 text-white rounded-r-lg">
+          <button onClick={handleSearchClick} className="absolute right-0 top-0 h-full px-4 bg-purple-600 text-white rounded-r-lg">
             <Search size={18} />
           </button>
         </div>
@@ -112,56 +122,6 @@ const FileCard = ({ file }: { file: Sticker }) => {
   );
 };
 
-// 分页组件
-const Pagination = ({ page, totalItems, onPageChange }: { page: number; totalItems: number; onPageChange: (page: number) => void; }) => {
-  const { t } = useTranslation();
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      onPageChange(newPage);
-    }
-  };
-
-  const renderPageNumbers = () => {
-    const pageNumbers = [];
-    const maxPagesToShow = 5;
-    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-    if (endPage - startPage + 1 < maxPagesToShow) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(
-        <button 
-          key={i}
-          onClick={() => handlePageChange(i)}
-          className={`px-3 py-1 text-xs border rounded ${
-            i === page 
-              ? 'border-purple-500 bg-purple-600 text-white' 
-              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          {i}
-        </button>
-      );
-    }
-    return pageNumbers;
-  };
-
-  return (
-    <div className="flex justify-center items-center gap-1 mt-8 mb-4">
-      <button onClick={() => handlePageChange(1)} disabled={page === 1} className="px-3 py-1 text-xs border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50">{t('first_page')}</button>
-      <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className="px-3 py-1 text-xs border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50">{t('previous_page')}</button>
-      {renderPageNumbers()}
-      <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} className="px-3 py-1 text-xs border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50">{t('next_page')}</button>
-      <button onClick={() => handlePageChange(totalPages)} disabled={page === totalPages} className="px-3 py-1 text-xs border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50">{t('last_page')}</button>
-    </div>
-  );
-};
-
 // 页脚组件
 const Footer = () => {
   const { t } = useTranslation();
@@ -175,12 +135,18 @@ const Footer = () => {
 
 // 主页面组件
 export default function Home() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const [files, setFiles] = useState<Sticker[]>([]);
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = (term: string) => {
+    setPage(1);
+    setSearchTerm(term);
+  };
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -189,11 +155,16 @@ export default function Home() {
         const from = (page - 1) * ITEMS_PER_PAGE;
         const to = from + ITEMS_PER_PAGE - 1;
 
-        const { data, error, count } = await supabase
+        let query = supabase
           .from('stickers')
           .select('*', { count: 'exact' })
-          .order('created_at', { ascending: false })
-          .range(from, to);
+          .order('created_at', { ascending: false });
+
+        if (searchTerm) {
+          query = query.ilike('title', `%${searchTerm}%`);
+        }
+
+        const { data, error, count } = await query.range(from, to);
 
         if (error) {
           throw error;
@@ -211,12 +182,12 @@ export default function Home() {
     };
 
     fetchFiles();
-  }, [page]);
+  }, [page, searchTerm, t]);
   
   return (
     <div className={`min-h-screen bg-pink-50 ${theme === 'dark' ? 'dark bg-gray-900 text-white' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <Header page={page} totalItems={totalItems} />
+        <Header page={page} totalItems={totalItems} onSearch={handleSearch} />
         
         {loading ? (
           <div className="text-center">{t('loading')}</div>
