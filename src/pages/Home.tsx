@@ -85,6 +85,14 @@ const FileCard = ({ file }: { file: Sticker }) => {
   const { t } = useTranslation();
   const modifiedDate = file.created_at ? new Date(file.created_at).toLocaleDateString() : null;
 
+  const handleOpen = () => {
+    if (file.image_url) {
+      window.open(file.image_url, '_blank', 'noopener,noreferrer');
+    } else {
+      toast.error('No file to open');
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden transition-transform hover:transform hover:scale-105">
       <div className="relative aspect-square bg-gray-100 flex items-center justify-center">
@@ -109,10 +117,7 @@ const FileCard = ({ file }: { file: Sticker }) => {
           {modifiedDate && <span>{modifiedDate}</span>}
         </div>
         <div className="flex gap-1">
-          <button className="flex-1 py-1 bg-gray-100 text-gray-800 rounded text-xs flex items-center justify-center">
-            <Download size={14} className="mr-1" /> {t('download')}
-          </button>
-          <button className="flex-1 py-1 bg-gray-100 text-gray-800 rounded text-xs flex items-center justify-center">
+          <button onClick={handleOpen} className="flex-1 py-1 bg-gray-100 text-gray-800 rounded text-xs flex items-center justify-center">
             <ExternalLink size={14} className="mr-1" /> 
             {t('open')}
           </button>

@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
-import AdminPage from "@/pages/Admin";
+import AdminPage from "@/pages/Admin.tsx";
 import { useState } from "react";
 import { AuthContext } from '@/contexts/authContext';
 

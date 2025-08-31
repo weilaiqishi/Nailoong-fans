@@ -297,7 +297,7 @@ const StickerManager = () => {
 
     const { data, error, count } = await supabase
         .from('stickers')
-        .select('*', { count: 'exact' })
+                .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -382,7 +382,7 @@ const StickerManager = () => {
 }
 
 
-export default function AdminPage() {
+export function AdminPage() {
   const { theme, isDark } = useTheme();
   const [session, setSession] = useState<Session | null>(null);
 
@@ -420,3 +420,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+export default AdminPage;

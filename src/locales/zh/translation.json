@@ -5,10 +5,6 @@
   "no_preview": "无预览图",
   "download": "下载",
   "open": "打开",
-  "first_page": "首页",
-  "previous_page": "上一页",
-  "next_page": "下一页",
-  "last_page": "末页",
   "footer_text_1": "© 2025 Nailong fans - 本站资源均来源于网络，仅供学习交流使用，请于下载后24小时内删除",
   "footer_text_2": "本站不存储任何实际文件，所有内容均为索引指向，如有侵权请联系删除",
   "loading": "加载中...",
@@ -17,5 +13,9 @@
   "switch_to_en": "Switch to English",
   "switch_to_zh": "切换到中文",
   "total_items": "共 {{count}} 条",
-  "items_per_page": "{{count}}条/页"
+  "items_per_page": "{{count}}条/页",
+  "first": "首页",
+  "prev": "上一页",
+  "next": "下一页",
+  "last": "末页"
 }
