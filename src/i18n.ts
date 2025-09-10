@@ -17,6 +17,7 @@ i18n
       },
     },
     supportedLngs: ['en', 'zh'],
+    lng: 'en',
     fallbackLng: 'en',
     debug: true,
     interpolation: {

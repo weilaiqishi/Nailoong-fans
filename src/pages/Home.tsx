@@ -35,7 +35,7 @@ const Header = ({ page, totalItems, onSearch }: { page: number; totalItems: numb
           <div className="w-8 h-8 rounded-full bg-pink-300 flex items-center justify-center">
             <span className="font-bold text-purple-800">N</span>
           </div>
-          <h1 className="text-xl font-bold text-purple-800">Nailong fans</h1>
+          <h1 className="text-xl font-bold text-purple-800">{t('home_title')}</h1>
           <span className="text-xs text-pink-500">{t('nailong_sticker_collection')}</span>
         </div>
         <div className="flex items-center gap-2">
@@ -99,7 +99,7 @@ const FileCard = ({ file }: { file: Sticker }) => {
         {file.image_url ? (
           <img 
             src={file.image_url} 
-            alt={`Sticker ${file.title}`}
+            alt={t('sticker_alt', { title: file.title })}
             className="w-full h-full object-contain"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/default/200/200';
@@ -154,6 +154,10 @@ export default function Home() {
   };
 
   useEffect(() => {
+    document.title = t('home_title');
+  }, [t]);
+
+  useEffect(() => {
     const fetchFiles = async () => {
       setLoading(true);
       try {
@@ -193,6 +197,11 @@ export default function Home() {
     <div className={`min-h-screen bg-pink-50 ${theme === 'dark' ? 'dark bg-gray-900 text-white' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <Header page={page} totalItems={totalItems} onSearch={handleSearch} />
+        <div className="text-center mb-6">
+          <p className="text-lg text-gray-700 dark:text-gray-300">
+            {t('home_intro')}
+          </p>
+        </div>
         
         {loading ? (
           <div className="text-center">{t('loading')}</div>
